@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة مواصفات المشاريع</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1117;--bg2:#161a24;--bg3:#1e2333;--bg4:#252b3d;--border:#2e3650;--accent:#3b82f6;--accent2:#1d4ed8;--accent-glow:rgba(59,130,246,0.15);--text:#e8eaf0;--text2:#9aa0b8;--text3:#5c6480;--success:#10b981;--success-bg:rgba(16,185,129,0.1);--warning:#f59e0b;--warning-bg:rgba(245,158,11,0.1);--radius:10px;--radius-sm:6px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;direction:rtl;}
+.layout{display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:270px;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.logo{padding:20px 16px;border-bottom:1px solid var(--border);}
+.logo-mark{display:flex;align-items:center;gap:10px;}
+.logo-icon{width:38px;height:38px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.logo-text{font-size:15px;font-weight:600;}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:2px;font-family:'IBM Plex Mono',monospace;}
+.sidebar-nav{padding:14px 10px;flex:1;overflow-y:auto;}
+.nav-label{font-size:10px;color:var(--text3);font-weight:500;letter-spacing:.08em;padding:0 8px;margin-bottom:6px;text-transform:uppercase;}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:9px 11px;border-radius:var(--radius-sm);background:transparent;border:none;cursor:pointer;color:var(--text2);font-size:13px;font-family:inherit;transition:all .15s;text-align:right;margin-bottom:2px;}
+.nav-btn:hover{background:var(--bg3);color:var(--text);}
+.nav-btn.active{background:var(--accent-glow);color:var(--accent);}
+.nav-icon{font-size:16px;flex-shrink:0;}
+.proj-section{padding:12px 10px;border-top:1px solid var(--border);}
+.proj-chip{display:inline-block;font-size:11px;padding:3px 8px;border-radius:4px;background:var(--bg4);color:var(--text2);border:1px solid var(--border);margin:2px;font-family:'IBM Plex Mono',monospace;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{padding:14px 24px;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:space-between;}
+.page-title{font-size:15px;font-weight:600;}
+.page-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.status{font-size:11px;padding:4px 12px;border-radius:20px;font-weight:500;}
+.status.loading{background:var(--warning-bg);color:var(--warning);border:1px solid rgba(245,158,11,.3);}
+.status.ready{background:var(--success-bg);color:var(--success);border:1px solid rgba(16,185,129,.3);}
+.content{flex:1;overflow-y:auto;padding:24px;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* Chat */
+.chat-wrap{max-width:740px;margin:0 auto;display:flex;flex-direction:column;height:calc(100vh - 170px);}
+.chat-messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding-bottom:14px;}
+.msg{display:flex;gap:10px;align-items:flex-start;animation:fadeUp .2s ease;}
+.msg.user{flex-direction:row-reverse;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.avatar{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;margin-top:2px;}
+.avatar.ai{background:var(--accent);color:white;}
+.avatar.user{background:var(--bg4);color:var(--text2);border:1px solid var(--border);}
+.bubble{padding:11px 15px;border-radius:var(--radius);font-size:14px;line-height:1.75;max-width:88%;}
+.msg.bot .bubble{background:var(--bg3);border:1px solid var(--border);border-radius:4px var(--radius) var(--radius) var(--radius);white-space:pre-wrap;}
+.msg.user .bubble{background:var(--accent2);color:white;border-radius:var(--radius) 4px var(--radius) var(--radius);}
+.typing{display:flex;gap:5px;align-items:center;padding:6px 0;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:bounce 1.2s infinite;}
+.dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,80%,100%{transform:scale(1);opacity:.4;}40%{transform:scale(1.2);opacity:1;}}
+.chat-footer{padding-top:14px;border-top:1px solid var(--border);}
+
+/* Section selector */
+.section-selector{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.sec-btn{font-size:11px;padding:5px 10px;border-radius:16px;background:var(--bg4);border:1px solid var(--border);color:var(--text2);cursor:pointer;font-family:inherit;transition:all .15s;}
+.sec-btn:hover{border-color:var(--accent);color:var(--accent);}
+.sec-btn.active{background:var(--accent-glow);border-color:var(--accent);color:var(--accent);}
+
+.proj-selector{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.proj-btn{font-size:11px;padding:5px 10px;border-radius:16px;background:var(--bg4);border:1px solid var(--border);color:var(--text2);cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .15s;}
+.proj-btn:hover{border-color:var(--accent);color:var(--accent);}
+.proj-btn.active{background:var(--accent);color:white;border-color:var(--accent);}
+
+.chat-input-row{display:flex;gap:8px;}
+.chat-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:11px 15px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s;}
+.chat-input:focus{border-color:var(--accent);}
+.chat-input::placeholder{color:var(--text3);}
+.send-btn{padding:11px 18px;background:var(--accent);border:none;border-radius:var(--radius);color:white;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;white-space:nowrap;}
+.send-btn:hover{background:var(--accent2);}
+.send-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+.ctx-bar{font-size:11px;color:var(--text3);margin-bottom:8px;padding:6px 10px;background:var(--bg4);border-radius:6px;border:1px solid var(--border);}
+.ctx-bar span{color:var(--accent);font-weight:500;}
+
+/* Search panel */
+.search-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.field label{display:block;font-size:12px;color:var(--text2);margin-bottom:7px;font-weight:500;}
+.field select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 13px;color:var(--text);font-size:14px;font-family:inherit;outline:none;cursor:pointer;transition:border-color .15s;appearance:none;}
+.field select:focus{border-color:var(--accent);}
+.search-btn{width:100%;padding:12px;background:var(--accent);border:none;border-radius:var(--radius);color:white;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500;margin-bottom:20px;}
+.search-btn:hover{background:var(--accent2);}
+.result-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:18px;display:none;}
+.result-card.show{display:block;animation:fadeUp .2s ease;}
+.result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.result-title{font-size:14px;font-weight:600;}
+.result-count{font-size:12px;color:var(--text3);}
+.vendor-table{width:100%;border-collapse:collapse;}
+.vendor-table th{font-size:11px;color:var(--text3);text-align:right;padding:7px 11px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.05em;}
+.vendor-table td{padding:9px 11px;font-size:14px;border-bottom:1px solid rgba(46,54,80,.5);}
+.vendor-table tr:last-child td{border-bottom:none;}
+.vendor-table tr:hover td{background:var(--bg4);}
+.num{font-family:'IBM Plex Mono',monospace;color:var(--text3);font-size:12px;}
+.country-badge{font-size:11px;padding:3px 8px;border-radius:4px;background:var(--bg4);color:var(--text2);border:1px solid var(--border);}
+
+/* Compare */
+.compare-controls{display:flex;gap:14px;align-items:flex-end;margin-bottom:20px;}
+.compare-controls .field{flex:1;}
+.compare-btn{padding:10px 22px;background:var(--accent);border:none;border-radius:var(--radius);color:white;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;white-space:nowrap;flex-shrink:0;}
+.compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;}
+.proj-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;animation:fadeUp .2s ease;}
+.proj-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.proj-name{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:500;color:var(--accent);}
+.proj-count{font-size:11px;color:var(--text3);}
+.vendor-list{display:flex;flex-direction:column;gap:5px;}
+.vendor-row{display:flex;align-items:center;justify-content:space-between;padding:5px 9px;border-radius:var(--radius-sm);background:var(--bg4);}
+.vendor-row.common{background:var(--success-bg);border:1px solid rgba(16,185,129,.2);}
+.vendor-name{font-size:13px;}
+.vendor-row.common .vendor-name{color:var(--success);}
+.vendor-country{font-size:11px;color:var(--text3);}
+.common-banner{background:var(--success-bg);border:1px solid rgba(16,185,129,.3);border-radius:var(--radius);padding:12px 16px;margin-bottom:18px;display:none;animation:fadeUp .2s ease;}
+.common-banner.show{display:flex;align-items:center;gap:10px;}
+.common-banner-text{font-size:13px;}
+.common-banner-text strong{color:var(--success);}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <div class="logo-icon">📋</div>
+        <div>
+          <div class="logo-text">مواصفات المشاريع</div>
+          <div class="logo-sub">Specs Search Tool v3.0</div>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-label">الأقسام</div>
+      <button class="nav-btn active" onclick="switchPanel('chat',this)"><span class="nav-icon">💬</span> محادثة ذكية</button>
+      <button class="nav-btn" onclick="switchPanel('search',this)"><span class="nav-icon">🔍</span> بحث Vendors</button>
+      <button class="nav-btn" onclick="switchPanel('compare',this)"><span class="nav-icon">⚖️</span> مقارنة المشاريع</button>
+    </div>
+    <div class="proj-section">
+      <div class="nav-label" style="margin-bottom:8px">المشاريع</div>
+      <span class="proj-chip">CAP_264</span><span class="proj-chip">CAP_268</span>
+      <span class="proj-chip">CAP_272</span><span class="proj-chip">CAP_273-65</span>
+      <span class="proj-chip">CAP_273-66</span><span class="proj-chip">CAP_274</span>
+      <span class="proj-chip">CAP_275</span><span class="proj-chip">CAP_276</span>
+      <span class="proj-chip">CAP_277</span>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title" id="page-title">محادثة ذكية</div>
+        <div class="page-sub" id="page-sub">اختر المشروع والقسم ثم اكتب سؤالك</div>
+      </div>
+      <span class="status loading" id="status-badge">⏳ تحميل البيانات...</span>
+    </div>
+    <div class="content">
+
+      <!-- Chat -->
+      <div id="panel-chat" class="panel active">
+        <div class="chat-wrap">
+          <div class="chat-messages" id="chat-messages">
+            <div class="msg bot">
+              <div class="avatar ai">AI</div>
+              <div class="bubble">مرحباً! 👋 أنا مساعدك للبحث في مواصفات المشاريع.
+
+اختر المشروع والقسم من الأسفل، ثم اكتب سؤالك وهجيبلك الإجابة من نص المواصفة الفعلي.
+
+⚡ الإجابات من المواصفة مباشرة — دقيقة 100%</div>
+            </div>
+          </div>
+          <div class="chat-footer">
+            <div class="ctx-bar" id="ctx-bar">المشروع: <span id="ctx-proj">CAP_264</span> &nbsp;|&nbsp; القسم: <span id="ctx-sec">عزل الدكت</span></div>
+            <div class="proj-selector" id="proj-selector">
+              <button class="proj-btn active" onclick="selectProj(this,'CAP_264')">CAP_264</button>
+              <button class="proj-btn" onclick="selectProj(this,'CAP_268')">CAP_268</button>
+              <button class="proj-btn" onclick="selectProj(this,'CAP_272')">CAP_272</button>
+              <button class="proj-btn" onclick="selectProj(this,'CAP_273_65')">CAP_273-65</button>
+              <button class="proj-btn" onclick="selectProj(this,'CAP_273_66')">CAP_273-66</button>
+              <button class="proj-btn" onclick="selectProj(this,'CAP_274')">CAP_274</button>
+              <button class="proj-btn" onclick="selectProj(this,'CAP_275')">CAP_275</button>
+              <button class="proj-btn" onclick="selectProj(this,'CAP_276')">CAP_276</button>
+              <button class="proj-btn" onclick="selectProj(this,'CAP_277')">CAP_277</button>
+            </div>
+            <div class="section-selector" id="sec-selector">
+              <button class="sec-btn active" onclick="selectSec(this,'duct_insulation')">🌡️ عزل الدكت</button>
+              <button class="sec-btn" onclick="selectSec(this,'pipe_insulation')">🔧 عزل الأنابيب</button>
+              <button class="sec-btn" onclick="selectSec(this,'fcu')">❄️ FCU</button>
+              <button class="sec-btn" onclick="selectSec(this,'ahu')">💨 AHU</button>
+              <button class="sec-btn" onclick="selectSec(this,'chiller')">🧊 Chiller</button>
+              <button class="sec-btn" onclick="selectSec(this,'pumps')">⚙️ Pumps</button>
+              <button class="sec-btn" onclick="selectSec(this,'testing')">📊 Testing</button>
+              <button class="sec-btn" onclick="selectSec(this,'vendors')">✅ Vendors</button>
+            </div>
+            <div class="chat-input-row">
+              <input type="text" class="chat-input" id="chat-input" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter')sendChat()">
+              <button class="send-btn" id="send-btn" onclick="sendChat()">إرسال ←</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Vendors -->
+      <div id="panel-search" class="panel">
+        <div style="max-width:580px">
+          <div class="search-grid">
+            <div class="field">
+              <label>اختر المشروع</label>
+              <select id="search-project">
+                <option value="">-- اختر --</option>
+                <option value="CAP_264">CAP_264</option>
+                <option value="CAP_273_65">CAP_273 - 65</option>
+                <option value="CAP_273_66">CAP_273 - 66</option>
+                <option value="CAP_274">CAP_274</option>
+                <option value="CAP_268">CAP_268</option>
+                <option value="CAP_272">CAP_272</option>
+                <option value="CAP_275">CAP_275</option>
+                <option value="CAP_276">CAP_276</option>
+                <option value="CAP_277">CAP_277</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>اختر المعدة</label>
+              <select id="search-equipment">
+                <option value="">-- اختر --</option>
+                <option value="FCU">Fan Coil Unit (FCU)</option>
+                <option value="AHU">Air Handling Unit (AHU)</option>
+                <option value="Chiller">Chiller</option>
+                <option value="VRF">VRF System</option>
+                <option value="Split">Split Unit</option>
+                <option value="Pump">Pumps</option>
+              </select>
+            </div>
+          </div>
+          <button class="search-btn" onclick="doSearch()">🔍 عرض الـ Vendors المعتمدة</button>
+          <div class="result-card" id="result-card">
+            <div class="result-header">
+              <div class="result-title" id="result-title"></div>
+              <div class="result-count" id="result-count"></div>
+            </div>
+            <table class="vendor-table">
+              <thead><tr><th>#</th><th>Vendor</th><th>بلد المنشأ</th></tr></thead>
+              <tbody id="result-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compare -->
+      <div id="panel-compare" class="panel">
+        <div class="compare-controls">
+          <div class="field">
+            <label>اختر المعدة للمقارنة</label>
+            <select id="compare-equip">
+              <option value="FCU">Fan Coil Unit (FCU)</option>
+              <option value="AHU">Air Handling Unit (AHU)</option>
+              <option value="Chiller">Chiller</option>
+              <option value="VRF">VRF System</option>
+              <option value="Split">Split Unit</option>
+            </select>
+          </div>
+          <button class="compare-btn" onclick="doCompare()">مقارنة ⚖️</button>
+        </div>
+        <div class="common-banner" id="common-banner">
+          <span style="font-size:18px;color:var(--success)">✓</span>
+          <div class="common-banner-text" id="common-text"></div>
+        </div>
+        <div class="compare-grid" id="compare-grid"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+var GEMINI_KEY = "AIzaSyBrlHr49IlCjxxl1RMHtcwXBQzX_8AnNGs";
+var SPECS_DATA = null;
+var selectedProj = "CAP_264";
+var selectedSec = "duct_insulation";
+var chatHistory = [];
+
+var SEC_LABELS = {
+  duct_insulation:"عزل الدكت", pipe_insulation:"عزل الأنابيب",
+  fcu:"FCU", ahu:"AHU", chiller:"Chiller",
+  pumps:"Pumps", testing:"Testing & Balancing", vendors:"Vendors"
+};
+
+var PROJ_LABELS = {
+  CAP_264:"CAP_264",CAP_268:"CAP_268",CAP_272:"CAP_272",
+  CAP_273_65:"CAP_273-65",CAP_273_66:"CAP_273-66",
+  CAP_274:"CAP_274",CAP_275:"CAP_275",CAP_276:"CAP_276",CAP_277:"CAP_277"
+};
+
+var VENDORS = {
+  CAP_264:{
+    FCU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Trosten",c:"UAE"}],
+    AHU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Euroclima",c:"Europe"},{n:"Flaktwood",c:"UK/USA"},{n:"Trosten",c:"UAE"}],
+    Chiller:[{n:"Trane",c:"USA"},{n:"Carrier",c:"USA"},{n:"York",c:"USA"},{n:"McQuay",c:"USA"}],
+    VRF:[{n:"Mitsubishi",c:"Japan/Thailand"},{n:"LG",c:"Korea"},{n:"O-General",c:"Japan/Malaysia"}],
+    Split:[{n:"Trane",c:"USA"},{n:"York",c:"USA"},{n:"Rheem",c:"USA"},{n:"Daikin",c:"Malaysia"}]
+  },
+  CAP_273_65:{
+    FCU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Maker",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Gami",c:"UAE"},{n:"Trosten",c:"UAE"}],
+    AHU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Maker",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Euroclima",c:"Europe"},{n:"Flaktwood",c:"UK/USA"},{n:"Gami",c:"UAE"},{n:"Trosten",c:"UAE"}],
+    Chiller:[{n:"Trane",c:"France"},{n:"Carrier",c:"USA/France"},{n:"York",c:"USA/Mexico"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"McQuay",c:"Italy"}],
+    VRF:[{n:"Mitsubishi",c:"Japan/Thailand"},{n:"LG",c:"Korea"},{n:"O-General",c:"Japan/Malaysia"}],
+    Split:[{n:"Rheem",c:"USA"},{n:"Daikin",c:"Malaysia"}]
+  },
+  CAP_274:{
+    FCU:[{n:"Trane",c:"USA"},{n:"Carrier",c:"USA"},{n:"York",c:"USA/West Europe"},{n:"Daikin",c:"USA"}],
+    AHU:[{n:"Trane",c:"USA"},{n:"Carrier",c:"USA"},{n:"York",c:"USA/West Europe"},{n:"Daikin",c:"USA"}],
+    Chiller:[{n:"Trane",c:"USA"},{n:"Carrier",c:"USA"},{n:"York",c:"USA/West Europe"},{n:"Daikin",c:"USA"}],
+    VRF:[{n:"Samsung",c:"South Korea"},{n:"Rheem",c:"USA"},{n:"Mitsubishi Electric",c:"Japan"},{n:"Daikin",c:"Thailand"}],
+    Split:[{n:"Trane",c:"USA"},{n:"Carrier",c:"USA"},{n:"York",c:"USA/West Europe"},{n:"Daikin",c:"USA"}]
+  }
+};
+
+var PAGE_INFO = {
+  chat:{title:"محادثة ذكية",sub:"اختر المشروع والقسم ثم اكتب سؤالك"},
+  search:{title:"بحث Vendors",sub:"عرض Vendors المعتمدة لكل معدة"},
+  compare:{title:"مقارنة المشاريع",sub:"قارن الـ Vendors بين المشاريع"}
+};
+
+// Load specs data from JSON file
+fetch('specs_data.json')
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    SPECS_DATA = data;
+    document.getElementById('status-badge').className = 'status ready';
+    document.getElementById('status-badge').textContent = '● جاهز';
+    console.log('Specs loaded:', Object.keys(data));
+  })
+  .catch(function(e){
+    document.getElementById('status-badge').textContent = '⚠ خطأ في التحميل';
+    console.error('Failed to load specs:', e);
+  });
+
+function switchPanel(name, btn) {
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('panel-'+name).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('page-title').textContent = PAGE_INFO[name].title;
+  document.getElementById('page-sub').textContent = PAGE_INFO[name].sub;
+}
+
+function selectProj(btn, proj) {
+  document.querySelectorAll('.proj-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  selectedProj = proj;
+  updateCtxBar();
+}
+
+function selectSec(btn, sec) {
+  document.querySelectorAll('.sec-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  selectedSec = sec;
+  updateCtxBar();
+}
+
+function updateCtxBar() {
+  document.getElementById('ctx-proj').textContent = PROJ_LABELS[selectedProj] || selectedProj;
+  document.getElementById('ctx-sec').textContent = SEC_LABELS[selectedSec] || selectedSec;
+  var hasData = SPECS_DATA && SPECS_DATA[selectedProj] && SPECS_DATA[selectedProj][selectedSec];
+  document.getElementById('ctx-bar').style.borderColor = hasData ? 'rgba(16,185,129,.4)' : 'rgba(245,158,11,.4)';
+}
+
+function addMsg(role, text) {
+  var c = document.getElementById('chat-messages');
+  var d = document.createElement('div');
+  d.className = 'msg ' + role;
+  var label = role === 'bot' ? 'AI' : 'أنت';
+  var cls = role === 'bot' ? 'ai' : 'user';
+  d.innerHTML = '<div class="avatar '+cls+'">'+label+'</div><div class="bubble">'+escHtml(text)+'</div>';
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+  return d;
+}
+
+function escHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function addTyping() {
+  var c = document.getElementById('chat-messages');
+  var d = document.createElement('div');
+  d.className = 'msg bot';
+  d.innerHTML = '<div class="avatar ai">AI</div><div class="bubble"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>';
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+  return d;
+}
+
+async function sendChat() {
+  var input = document.getElementById('chat-input');
+  var btn = document.getElementById('send-btn');
+  var q = input.value.trim();
+  if (!q) return;
+  if (!SPECS_DATA) { addMsg('bot', 'البيانات لم تُحمَّل بعد. انتظر لحظة وحاول مرة أخرى.'); return; }
+  input.value = '';
+  btn.disabled = true;
+  addMsg('user', q);
+  var typingEl = addTyping();
+
+  // Get relevant specs context
+  var projData = SPECS_DATA[selectedProj] || {};
+  var specsText = projData[selectedSec] || '';
+
+  // Also check thickness tables
+  if (selectedSec === 'duct_insulation' && projData['duct_thickness_table']) {
+    specsText += '\n\n' + projData['duct_thickness_table'];
+  }
+  if (selectedSec === 'pipe_insulation' && projData['pipe_thickness_table']) {
+    specsText += '\n\n' + projData['pipe_thickness_table'];
+  }
+
+  var projName = PROJ_LABELS[selectedProj] || selectedProj;
+  var secName = SEC_LABELS[selectedSec] || selectedSec;
+
+  var systemPrompt = 'أنت مساعد متخصص في المواصفات الميكانيكية. المستخدم يسأل عن قسم "'+ secName +'" في مشروع "' + projName + '".\n\n';
+
+  if (specsText) {
+    systemPrompt += 'النص الفعلي من المواصفة:\n\n' + specsText + '\n\n';
+    systemPrompt += 'قواعد الإجابة:\n';
+    systemPrompt += '- أجب بالعربي\n';
+    systemPrompt += '- أجب فقط من النص الفعلي المذكور أعلاه\n';
+    systemPrompt += '- إذا كانت المعلومة موجودة، اذكرها بدقة مع رقم البند\n';
+    systemPrompt += '- إذا لم تجد المعلومة في هذا النص، قل بوضوح: "هذه المعلومة غير موجودة في قسم ' + secName + '، جرب قسماً آخر"\n';
+    systemPrompt += '- لا تخترع أي معلومة\n';
+    systemPrompt += '- كن دقيقاً ومختصراً';
+  } else {
+    systemPrompt += 'هذا القسم غير متوفر لهذا المشروع في قاعدة البيانات. أخبر المستخدم بذلك بوضوح.';
+  }
+
+  var geminiContents = [];
+  for (var i = 0; i < chatHistory.length; i++) {
+    geminiContents.push({role: chatHistory[i].r === 'user' ? 'user' : 'model', parts:[{text: chatHistory[i].c}]});
+  }
+  geminiContents.push({role:'user', parts:[{text: systemPrompt + '\n\nالسؤال: ' + q}]});
+
+  try {
+    var resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + GEMINI_KEY, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({contents: geminiContents})
+    });
+    var data = await resp.json();
+    var answer = (data.candidates && data.candidates[0]) ? data.candidates[0].content.parts[0].text : 'حدث خطأ. تأكد من الاتصال بالإنترنت.';
+    typingEl.remove();
+    addMsg('bot', answer);
+    chatHistory.push({r:'user',c:q},{r:'assistant',c:answer});
+    if (chatHistory.length > 16) chatHistory.splice(0,2);
+  } catch(e) {
+    typingEl.remove();
+    addMsg('bot', 'حدث خطأ: ' + e.message);
+  }
+  btn.disabled = false;
+}
+
+function doSearch() {
+  var proj = document.getElementById('search-project').value;
+  var equip = document.getElementById('search-equipment').value;
+  var card = document.getElementById('result-card');
+  if (!proj || !equip) { alert('اختر المشروع والمعدة أولاً'); return; }
+  var data = VENDORS[proj] && VENDORS[proj][equip];
+  card.classList.add('show');
+  document.getElementById('result-title').textContent = equip + ' — ' + PROJ_LABELS[proj];
+  if (!data) {
+    document.getElementById('result-count').textContent = 'غير متوفر';
+    document.getElementById('result-tbody').innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text3);padding:20px;">البيانات غير متوفرة لهذا المشروع</td></tr>';
+    return;
+  }
+  document.getElementById('result-count').textContent = data.length + ' vendors';
+  var rows = '';
+  for (var i=0;i<data.length;i++) {
+    rows += '<tr><td class="num">0'+(i+1)+'</td><td style="font-weight:500">'+data[i].n+'</td><td><span class="country-badge">'+data[i].c+'</span></td></tr>';
+  }
+  document.getElementById('result-tbody').innerHTML = rows;
+}
+
+function doCompare() {
+  var equip = document.getElementById('compare-equip').value;
+  var projects = Object.keys(VENDORS).filter(function(p){return VENDORS[p][equip];});
+  var grid = document.getElementById('compare-grid');
+  var banner = document.getElementById('common-banner');
+  if (!projects.length) { grid.innerHTML = '<p style="color:var(--text3);padding:40px;text-align:center;">لا توجد بيانات</p>'; return; }
+  var allVend = [];
+  projects.forEach(function(p){ VENDORS[p][equip].forEach(function(v){ if(allVend.indexOf(v.n)<0) allVend.push(v.n); }); });
+  var common = allVend.filter(function(v){ return projects.every(function(p){ return VENDORS[p][equip].some(function(x){return x.n===v;}); }); });
+  if (common.length) {
+    banner.classList.add('show');
+    document.getElementById('common-text').innerHTML = 'مشتركون في كل المشاريع: <strong>'+common.join(' - ')+'</strong>';
+  } else { banner.classList.remove('show'); }
+  var html = '';
+  projects.forEach(function(p) {
+    var vendors = VENDORS[p][equip];
+    var rows = '';
+    vendors.forEach(function(v) {
+      var ic = common.indexOf(v.n) >= 0;
+      rows += '<div class="vendor-row'+(ic?' common':'')+'"><span class="vendor-name">'+v.n+'</span><span class="vendor-country">'+v.c+'</span></div>';
+    });
+    html += '<div class="proj-card"><div class="proj-card-header"><span class="proj-name">'+PROJ_LABELS[p]+'</span><span class="proj-count">'+vendors.length+' vendors</span></div><div class="vendor-list">'+rows+'</div></div>';
+  });
+  grid.innerHTML = html;
+}
+</script>
+</body>
+</html>

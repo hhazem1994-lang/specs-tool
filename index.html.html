@@ -225,8 +225,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
                 <option value="">-- اختر --</option>
                 <option value="FCU">Fan Coil Unit (FCU)</option>
                 <option value="AHU">Air Handling Unit (AHU)</option>
-                <option value="Chiller">Water Cooled Chiller</option>
-                <option value="AirCooledChiller">Air Cooled Chiller</option>
+                <option value="Chiller">Chiller</option>
                 <option value="VRF">VRF System</option>
                 <option value="Split">Split Unit</option>
                 <option value="Pump">Pumps</option>
@@ -255,8 +254,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
             <select id="compare-equip">
               <option value="FCU">Fan Coil Unit (FCU)</option>
               <option value="AHU">Air Handling Unit (AHU)</option>
-              <option value="Chiller">Water Cooled Chiller</option>
-              <option value="AirCooledChiller">Air Cooled Chiller</option>
+              <option value="Chiller">Chiller</option>
               <option value="VRF">VRF System</option>
               <option value="Split">Split Unit</option>
             </select>
@@ -275,7 +273,7 @@ body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:va
 </div>
 
 <script>
-var GEMINI_KEY = "AIzaSyDkpvy3YBJqNZ8-BCj9zUKmtQTg4jE0ea4";
+var GEMINI_KEY = "AIzaSyBrlHr49IlCjxxl1RMHtcwXBQzX_8AnNGs";
 var SPECS_DATA = null;
 var selectedProj = "CAP_264";
 var selectedSec = "duct_insulation";
@@ -297,76 +295,23 @@ var VENDORS = {
   CAP_264:{
     FCU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Trosten",c:"UAE"}],
     AHU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Euroclima",c:"Europe"},{n:"Flaktwood",c:"UK/USA"},{n:"Trosten",c:"UAE"}],
-    Chiller:[{n:"York",c:"USA"},{n:"McQuay",c:"USA"},{n:"BAC",c:"USA"},{n:"Marley",c:"USA"}],
-    AirCooledChiller:[{n:"Trane",c:"France"},{n:"Carrier",c:"USA/France"},{n:"York",c:"USA/Mexico"},{n:"McQuay",c:"Italy"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"}],
+    Chiller:[{n:"Trane",c:"USA"},{n:"Carrier",c:"USA"},{n:"York",c:"USA"},{n:"McQuay",c:"USA"}],
     VRF:[{n:"Mitsubishi",c:"Japan/Thailand"},{n:"LG",c:"Korea"},{n:"O-General",c:"Japan/Malaysia"}],
-    Split:[{n:"Trane",c:"USA"},{n:"York",c:"USA"},{n:"Rheem",c:"USA"},{n:"Daikin",c:"Malaysia"}],
-    Pump:[{n:"GAMI",c:"UAE"},{n:"SPP",c:"UK/USA"},{n:"KSB",c:"Germany"},{n:"Grundfos",c:"Germany"},{n:"Armstrong",c:"Italy"},{n:"ITT-Bell & Gossett",c:"USA"},{n:"Goulds",c:"Europe"},{n:"Aurora",c:"USA"},{n:"Flowserve",c:"Italy"}]
-  },
-  CAP_268:{
-    FCU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Trosten",c:"UAE"}],
-    AHU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Trosten",c:"UAE"}],
-    Pump:[{n:"GAMI",c:"UAE"},{n:"SPP",c:"UK/USA"},{n:"KSB",c:"Germany"},{n:"Grundfos",c:"Germany"},{n:"Armstrong",c:"Italy"},{n:"ITT-Bell & Gossett",c:"USA"}]
-  },
-  CAP_272:{
-    FCU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Trosten",c:"UAE"}],
-    AHU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Euroclima",c:"Europe"},{n:"Flaktwood",c:"UK/USA"},{n:"Trosten",c:"UAE"}],
-    Chiller:[{n:"York",c:"USA"},{n:"McQuay",c:"USA"},{n:"BAC",c:"USA"},{n:"Marley",c:"USA"}],
-    AirCooledChiller:[{n:"Trane",c:"France"},{n:"Carrier",c:"USA/France"},{n:"York",c:"USA/Mexico"},{n:"McQuay",c:"Italy"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"}],
-    VRF:[{n:"Mitsubishi",c:"Japan/Thailand"},{n:"LG",c:"Korea"},{n:"O-General",c:"Japan/Malaysia"}],
-    Split:[{n:"Trane",c:"USA"},{n:"York",c:"USA"},{n:"Rheem",c:"USA"},{n:"Daikin",c:"Malaysia"}],
-    Pump:[{n:"GAMI",c:"UAE"},{n:"SPP",c:"UK/USA"},{n:"KSB",c:"Germany"},{n:"Grundfos",c:"Germany"},{n:"Armstrong",c:"Italy"},{n:"ITT-Bell & Gossett",c:"USA"},{n:"Goulds",c:"Europe"},{n:"Aurora",c:"USA"},{n:"Flowserve",c:"Italy"}]
+    Split:[{n:"Trane",c:"USA"},{n:"York",c:"USA"},{n:"Rheem",c:"USA"},{n:"Daikin",c:"Malaysia"}]
   },
   CAP_273_65:{
     FCU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Maker",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Gami",c:"UAE"},{n:"Trosten",c:"UAE"}],
     AHU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Maker",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Euroclima",c:"Europe"},{n:"Flaktwood",c:"UK/USA"},{n:"Gami",c:"UAE"},{n:"Trosten",c:"UAE"}],
-    Chiller:[{n:"York",c:"USA"},{n:"McQuay",c:"USA"},{n:"BAC",c:"USA"},{n:"Marley",c:"USA"}],
-    AirCooledChiller:[{n:"Trane",c:"Italy/Malaysia"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"McQuay",c:"Italy"},{n:"York",c:"USA/Mexico"},{n:"Carrier",c:"USA/France"}],
+    Chiller:[{n:"Trane",c:"France"},{n:"Carrier",c:"USA/France"},{n:"York",c:"USA/Mexico"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"McQuay",c:"Italy"}],
     VRF:[{n:"Mitsubishi",c:"Japan/Thailand"},{n:"LG",c:"Korea"},{n:"O-General",c:"Japan/Malaysia"}],
-    Split:[{n:"Rheem",c:"USA"},{n:"Daikin",c:"Malaysia"}],
-    Pump:[{n:"GAMI",c:"UAE"},{n:"SPP",c:"UK/USA"},{n:"KSB",c:"Germany"},{n:"Grundfos",c:"Germany"},{n:"Armstrong",c:"Italy"},{n:"ITT-Bell & Gossett",c:"USA"},{n:"Goulds",c:"Europe"},{n:"Aurora",c:"USA"},{n:"Flowserve",c:"Italy"}]
-  },
-  CAP_273_66:{
-    FCU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Maker",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Gami",c:"UAE"},{n:"Trosten",c:"UAE"}],
-    AHU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Maker",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Euroclima",c:"Europe"},{n:"Flaktwood",c:"UK/USA"},{n:"Gami",c:"UAE"},{n:"Trosten",c:"UAE"}],
-    Chiller:[{n:"York",c:"USA"},{n:"McQuay",c:"USA"},{n:"BAC",c:"USA"},{n:"Marley",c:"USA"}],
-    AirCooledChiller:[{n:"Trane",c:"Italy/Malaysia"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"USA/Mexico"},{n:"McQuay",c:"Italy"},{n:"York",c:"KSA/UAE"}],
-    VRF:[{n:"Mitsubishi",c:"Japan/Thailand"},{n:"LG",c:"Korea"},{n:"O-General",c:"Japan/Malaysia"}],
-    Split:[{n:"Rheem",c:"USA"},{n:"Daikin",c:"Malaysia"}],
-    Pump:[{n:"GAMI",c:"UAE"},{n:"SPP",c:"UK/USA"},{n:"KSB",c:"Germany"},{n:"Grundfos",c:"Germany"},{n:"Armstrong",c:"Italy"},{n:"ITT-Bell & Gossett",c:"USA"},{n:"Goulds",c:"Europe"},{n:"Aurora",c:"USA"},{n:"Flowserve",c:"Italy"}]
+    Split:[{n:"Rheem",c:"USA"},{n:"Daikin",c:"Malaysia"}]
   },
   CAP_274:{
     FCU:[{n:"Trane",c:"USA"},{n:"Carrier",c:"USA"},{n:"York",c:"USA/West Europe"},{n:"Daikin",c:"USA"}],
     AHU:[{n:"Trane",c:"USA"},{n:"Carrier",c:"USA"},{n:"York",c:"USA/West Europe"},{n:"Daikin",c:"USA"}],
     Chiller:[{n:"Trane",c:"USA"},{n:"Carrier",c:"USA"},{n:"York",c:"USA/West Europe"},{n:"Daikin",c:"USA"}],
-    AirCooledChiller:[{n:"Trane",c:"USA"},{n:"Carrier",c:"USA"},{n:"York",c:"USA/West Europe"},{n:"Daikin",c:"USA"}],
     VRF:[{n:"Samsung",c:"South Korea"},{n:"Rheem",c:"USA"},{n:"Mitsubishi Electric",c:"Japan"},{n:"Daikin",c:"Thailand"}],
-    Split:[{n:"Trane",c:"USA"},{n:"Carrier",c:"USA"},{n:"York",c:"USA/West Europe"},{n:"Daikin",c:"USA"}],
-    Pump:[{n:"Armstrong",c:"West Europe"},{n:"Xylem Bell & Gossett",c:"USA"},{n:"Ebara",c:"West Europe"},{n:"Grundfos",c:"Denmark"}]
-  },
-  CAP_275:{
-    FCU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Trosten",c:"UAE"}],
-    AHU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Euroclima",c:"Europe"},{n:"Flaktwood",c:"UK/USA"},{n:"Trosten",c:"UAE"}],
-    Chiller:[{n:"York",c:"USA"},{n:"McQuay",c:"USA"},{n:"BAC",c:"USA"},{n:"Marley",c:"USA"}],
-    AirCooledChiller:[{n:"Trane",c:"France"},{n:"Carrier",c:"USA/France"},{n:"York",c:"USA/Mexico"},{n:"McQuay",c:"Italy"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"}],
-    VRF:[{n:"Mitsubishi",c:"Japan/Thailand"},{n:"LG",c:"Korea"},{n:"O-General",c:"Japan/Malaysia"}],
-    Split:[{n:"Trane",c:"USA"},{n:"York",c:"USA"},{n:"Rheem",c:"USA"},{n:"Daikin",c:"Malaysia"}],
-    Pump:[{n:"GAMI",c:"UAE"},{n:"SPP",c:"UK/USA"},{n:"KSB",c:"Germany"},{n:"Grundfos",c:"Germany"},{n:"Armstrong",c:"Italy"},{n:"ITT-Bell & Gossett",c:"USA"},{n:"Goulds",c:"Europe"},{n:"Aurora",c:"USA"},{n:"Flowserve",c:"Italy"}]
-  },
-  CAP_276:{
-    FCU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Trosten",c:"UAE"}],
-    AHU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Euroclima",c:"Europe"},{n:"Flaktwood",c:"UK/USA"},{n:"Trosten",c:"UAE"}],
-    Chiller:[{n:"York",c:"USA"},{n:"McQuay",c:"USA"},{n:"BAC",c:"USA"},{n:"Marley",c:"USA"}],
-    AirCooledChiller:[{n:"Trane",c:"Italy/Malaysia"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"McQuay",c:"Italy"},{n:"York",c:"USA/Mexico"},{n:"Carrier",c:"USA/France"}],
-    VRF:[{n:"Mitsubishi",c:"Japan/Thailand"},{n:"LG",c:"Korea"},{n:"O-General",c:"Japan/Malaysia"}],
-    Split:[{n:"Trane",c:"USA"},{n:"York",c:"USA"},{n:"Rheem",c:"USA"},{n:"Daikin",c:"Malaysia"}],
-    Pump:[{n:"GAMI",c:"UAE"},{n:"SPP",c:"UK/USA"},{n:"KSB",c:"Germany"},{n:"Grundfos",c:"Germany"},{n:"Armstrong",c:"Italy"},{n:"ITT-Bell & Gossett",c:"USA"},{n:"Goulds",c:"Europe"},{n:"Aurora",c:"USA"},{n:"Flowserve",c:"Italy"}]
-  },
-  CAP_277:{
-    FCU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Trosten",c:"UAE"}],
-    AHU:[{n:"Trane",c:"Turkey"},{n:"Carrier",c:"KSA/Malaysia"},{n:"York",c:"KSA/UAE"},{n:"SKM",c:"UAE"},{n:"Petra",c:"Jordan"},{n:"Mekar",c:"Italy"},{n:"McQuay",c:"Italy"},{n:"Euroclima",c:"Europe"},{n:"Flaktwood",c:"UK/USA"},{n:"Trosten",c:"UAE"}],
-    VRF:[{n:"Mitsubishi",c:"Japan/Thailand"},{n:"LG",c:"Korea"},{n:"O-General",c:"Japan/Malaysia"}],
-    Split:[{n:"Trane",c:"USA"},{n:"York",c:"USA"},{n:"Rheem",c:"USA"},{n:"Daikin",c:"Malaysia"}]
+    Split:[{n:"Trane",c:"USA"},{n:"Carrier",c:"USA"},{n:"York",c:"USA/West Europe"},{n:"Daikin",c:"USA"}]
   }
 };
 
